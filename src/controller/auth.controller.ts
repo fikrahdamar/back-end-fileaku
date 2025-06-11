@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { z } from "zod";
-import userModel, { Iuser } from "../models/user.model";
+import userModel from "../models/user.model";
+import { encrypt } from "../utils/encryption";
 
 type TRegister = {
   fullName: string;
@@ -8,6 +9,11 @@ type TRegister = {
   email: string;
   password: string;
   confirmPassword: string;
+};
+
+type TLogin = {
+  identifier: string;
+  password: string;
 };
 
 const validateRegisterSchema = z
@@ -65,6 +71,54 @@ export default {
           },
         });
       }
+    }
+  },
+  async login(req: Request, res: Response) {
+    try {
+      const { identifier, password } = req.body as unknown as TLogin;
+
+      const userByIdentifier = await userModel.findOne({
+        $or: [
+          {
+            email: identifier,
+          },
+          {
+            username: identifier,
+          },
+        ],
+      });
+
+      if (!userByIdentifier) {
+        res.status(403).json({
+          message: "Error username atau email salah",
+          data: null,
+        });
+        return;
+      }
+
+      const passwordMatch: boolean =
+        encrypt(password) === userByIdentifier.password;
+      if (!passwordMatch) {
+        res.status(403).json({
+          message: "Password tidak valid",
+          data: null,
+        });
+        return;
+      }
+
+      res.status(200).json({
+        message: "Login succesful",
+        data: userByIdentifier,
+      });
+    } catch (error) {
+      res.status(400).json({
+        message: "Error while registering user",
+        data: null,
+        error: {
+          message: (error as Error).message,
+          stack: (error as Error).stack,
+        },
+      });
     }
   },
 };

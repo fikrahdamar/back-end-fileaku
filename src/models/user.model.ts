@@ -1,7 +1,7 @@
 import mongoose, { Schema, Document } from "mongoose";
 import { encrypt } from "../utils/encryption";
 
-export interface Iuser extends Document {
+export interface IUser extends Document {
   fullName: string;
   username: string;
   email: string;
@@ -12,7 +12,7 @@ export interface Iuser extends Document {
   activationCode: string | null;
 }
 
-const userSchema = new Schema<Iuser>(
+const userSchema = new Schema<IUser>(
   {
     fullName: {
       type: String,
@@ -59,6 +59,12 @@ userSchema.pre("save", function (next) {
   next();
 });
 
-const userModel = mongoose.model<Iuser>("User", userSchema);
+userSchema.methods.toJSON = function () {
+  const user = this.toObject();
+  delete user.password;
+  return user;
+};
+
+const userModel = mongoose.model<IUser>("User", userSchema);
 
 export default userModel;
