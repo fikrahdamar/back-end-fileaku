@@ -1,7 +1,9 @@
 import { Request, Response } from "express";
 import { z } from "zod";
-import userModel from "../models/user.model";
+import userModel, { IUser } from "../models/user.model";
 import { encrypt } from "../utils/encryption";
+import { generateToken } from "../utils/jwt";
+import { IReqUser } from "../middleware/auth.middleware";
 
 type TRegister = {
   fullName: string;
@@ -73,6 +75,7 @@ export default {
       }
     }
   },
+
   async login(req: Request, res: Response) {
     try {
       const { identifier, password } = req.body as unknown as TLogin;
@@ -106,13 +109,38 @@ export default {
         return;
       }
 
+      const token = generateToken({
+        id: userByIdentifier._id,
+        role: userByIdentifier.role,
+      });
+
       res.status(200).json({
         message: "Login succesful",
-        data: userByIdentifier,
+        data: token,
       });
     } catch (error) {
       res.status(400).json({
         message: "Error while registering user",
+        data: null,
+        error: {
+          message: (error as Error).message,
+          stack: (error as Error).stack,
+        },
+      });
+    }
+  },
+  async me(req: IReqUser, res: Response) {
+    try {
+      const user = req.user;
+      const result = await userModel.findById(user?.id);
+
+      res.status(200).json({
+        message: "Succes get user profile",
+        data: result,
+      });
+    } catch (error) {
+      res.status(400).json({
+        message: "Error while getting data user",
         data: null,
         error: {
           message: (error as Error).message,
