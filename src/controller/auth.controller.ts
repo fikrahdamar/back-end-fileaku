@@ -23,7 +23,15 @@ const validateRegisterSchema = z
     fullName: z.string(),
     username: z.string(),
     email: z.string().email(),
-    password: z.string().min(6, "Password harus minimal 6 karakter"),
+    password: z
+      .string()
+      .min(6, "Password harus minimal 6 karakter")
+      .refine((val) => /^(?=.*[A-Z]).+$/.test(val), {
+        message: "Harus mengandung huruf kapital",
+      })
+      .refine((val) => /^(?=.*[0-9]).+$/.test(val), {
+        message: "Harus mengandung angka",
+      }),
     confirmPassword: z.string().min(6, "Password harus minimal 6 karakter"),
   })
   .refine((data) => data.password === data.confirmPassword, {
@@ -33,6 +41,19 @@ const validateRegisterSchema = z
 
 export default {
   async register(req: Request, res: Response) {
+    /*
+    #swagger.tags = ['Auth']
+    #swagger.requestBody = {
+            required: true,
+            content: {
+                "application/json": {
+                    schema: {
+                        $ref: "#/components/schemas/RegisterRequest"
+                    }  
+                }
+            }
+        } 
+    */
     const { fullName, username, email, password, confirmPassword } =
       req.body as unknown as TRegister;
 
@@ -78,6 +99,7 @@ export default {
 
   async login(req: Request, res: Response) {
     /*
+    #swagger.tags = ['Auth']
     #swagger.requestBody = {
             required: true,
             content: {
@@ -143,6 +165,7 @@ export default {
   },
   async me(req: IReqUser, res: Response) {
     /*
+    #swagger.tags = ['Auth']
      #swagger.security = [{
             "bearerAuth": []
     }]
