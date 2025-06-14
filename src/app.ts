@@ -19,7 +19,7 @@ const startServer = async () => {
       console.log(`This website running on http://localhost:${PORT}`);
     });
   } catch (error) {
-    console.log("error connect to api", error);
+    console.log("Error connect to api", error);
   }
 };
 

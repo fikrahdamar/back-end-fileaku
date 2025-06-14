@@ -28,6 +28,13 @@ const doc = {
         $identifier: "fikrahdamars",
         $password: "123456",
       },
+      RegisterRequest: {
+        $fullName: "Damar Euy",
+        $username: "damarsembla",
+        $email: "mblalela@yopmail.com",
+        $password: "Semblaa123",
+        $confirmPassword: "Semblaa123",
+      },
     },
   },
 };

@@ -23,7 +23,15 @@ const validateRegisterSchema = z
     fullName: z.string(),
     username: z.string(),
     email: z.string().email(),
-    password: z.string().min(6, "Password harus minimal 6 karakter"),
+    password: z
+      .string()
+      .min(6, "Password harus minimal 6 karakter")
+      .refine((val) => /^(?=.*[A-Z]).+$/.test(val), {
+        message: "Harus mengandung huruf kapital",
+      })
+      .refine((val) => /^(?=.*[0-9]).+$/.test(val), {
+        message: "Harus mengandung angka",
+      }),
     confirmPassword: z.string().min(6, "Password harus minimal 6 karakter"),
   })
   .refine((data) => data.password === data.confirmPassword, {
@@ -33,6 +41,19 @@ const validateRegisterSchema = z
 
 export default {
   async register(req: Request, res: Response) {
+    /*
+    #swagger.tags = ['Auth']
+    #swagger.requestBody = {
+            required: true,
+            content: {
+                "application/json": {
+                    schema: {
+                        $ref: "#/components/schemas/RegisterRequest"
+                    }  
+                }
+            }
+        } 
+    */
     const { fullName, username, email, password, confirmPassword } =
       req.body as unknown as TRegister;
 
@@ -78,6 +99,7 @@ export default {
 
   async login(req: Request, res: Response) {
     /*
+    #swagger.tags = ['Auth']
     #swagger.requestBody = {
             required: true,
             content: {
@@ -101,11 +123,13 @@ export default {
             username: identifier,
           },
         ],
+        isActive: true,
       });
 
       if (!userByIdentifier) {
         res.status(403).json({
-          message: "Error username atau email salah",
+          message:
+            "Error username atau email salah, atau akun belum diaktivasi",
           data: null,
         });
         return;
@@ -143,6 +167,7 @@ export default {
   },
   async me(req: IReqUser, res: Response) {
     /*
+    #swagger.tags = ['Auth']
      #swagger.security = [{
             "bearerAuth": []
     }]
@@ -158,6 +183,36 @@ export default {
     } catch (error) {
       res.status(400).json({
         message: "Error while getting data user",
+        data: null,
+        error: {
+          message: (error as Error).message,
+          stack: (error as Error).stack,
+        },
+      });
+    }
+  },
+
+  async activation(req: Request, res: Response) {
+    /* 
+      #swagger.tags = ['Auth']
+    */
+    try {
+      const { code } = req.body as { code: string };
+      const userActivation = await userModel.findOneAndUpdate(
+        {
+          activationCode: code,
+        },
+        {
+          isActive: true,
+        }
+      );
+      res.status(200).json({
+        message: "activation succes",
+        data: userActivation,
+      });
+    } catch (error) {
+      res.status(400).json({
+        message: "Error while activate user",
         data: null,
         error: {
           message: (error as Error).message,
