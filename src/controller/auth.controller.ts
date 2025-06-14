@@ -123,11 +123,13 @@ export default {
             username: identifier,
           },
         ],
+        isActive: true,
       });
 
       if (!userByIdentifier) {
         res.status(403).json({
-          message: "Error username atau email salah",
+          message:
+            "Error username atau email salah, atau akun belum diaktivasi",
           data: null,
         });
         return;
@@ -181,6 +183,36 @@ export default {
     } catch (error) {
       res.status(400).json({
         message: "Error while getting data user",
+        data: null,
+        error: {
+          message: (error as Error).message,
+          stack: (error as Error).stack,
+        },
+      });
+    }
+  },
+
+  async activation(req: Request, res: Response) {
+    /* 
+      #swagger.tags = ['Auth']
+    */
+    try {
+      const { code } = req.body as { code: string };
+      const userActivation = await userModel.findOneAndUpdate(
+        {
+          activationCode: code,
+        },
+        {
+          isActive: true,
+        }
+      );
+      res.status(200).json({
+        message: "activation succes",
+        data: userActivation,
+      });
+    } catch (error) {
+      res.status(400).json({
+        message: "Error while activate user",
         data: null,
         error: {
           message: (error as Error).message,

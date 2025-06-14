@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Aktivasi Akun</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap");
+    </style>
+  </head>
+  <body
+    style="
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+    "
+  >
+    <table
+      align="center"
+      width="600"
+      cellpadding="0"
+      cellspacing="0"
+      style="background-color: #fff; padding: 20px; border: 1px solid #ddd"
+    >
+      <tr>
+        <td align="center">
+          <h2 style="color: #333">Welcome!</h2>
+          <img
+            src="https://www.freeiconspng.com/thumbs/handshake-icon/black-handshake-icon-20.png"
+            alt="Welcome Icon"
+            width="80"
+            height="80"
+            style="margin-bottom: 20px"
+          />
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <h3 style="color: #333">Hallo <%= username %></h3>
+          <p style="color: #333">
+            Terima kasih telah mendaftar akun anda pada website kami.
+          </p>
+          <h4 style="color: #333">Aktifkan Akun Anda Sekarang</h4>
+          <p style="margin: 5px 0"><strong>Nama:</strong> <%= fullName %></p>
+          <p style="margin: 5px 0"><strong>Email:</strong> <%= email %></p>
+          <p style="margin: 5px 0"><strong>Dibuat:</strong> <%= createdAt %></p>
+          <p style="margin-top: 20px; color: #333">
+            Untuk menikmati layanan kami, klik tombol dibawah ini untuk
+            mengaktifkan akun anda terlebih dahulu.<br />
+            <em>Link aktivasi hanya berlaku satu kali.</em>
+          </p>
+          <p style="text-align: center; margin: 30px 0">
+            <a
+              href="<%= activationLink %>"
+              style="
+                background-color: #000;
+                color: #fff;
+                text-decoration: none;
+                padding: 12px 24px;
+                border-radius: 5px;
+                display: inline-block;
+              "
+            >
+              Activate Account
+            </a>
+          </p>
+          <hr
+            style="border: none; border-top: 1px solid #eee; margin: 30px 0"
+          />
+          <h4 style="color: #333">Punya pertanyaan?</h4>
+          <p style="color: #333">
+            Kamu bisa contact email kami untuk pertanyaanmu, kami siap membantu.
+          </p>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>
